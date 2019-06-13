@@ -318,7 +318,7 @@ allClasses.sort()
 
 evaluator = Evaluator()
 acc_AP = 0
-validClasses = 0
+validClasses = 1 # set to 1 because I work on only litter. change to 0 if more than one classes
 
 # Plot Precision x Recall curve
 detections = evaluator.PlotPrecisionRecallCurve(
@@ -348,7 +348,7 @@ for metricsPerClass in detections:
     total_FP = metricsPerClass['total FP']
 
     if totalPositives > 0:
-        validClasses = validClasses + 1
+        # validClasses = validClasses + 1 # uncomment if classes are more than 1
         acc_AP = acc_AP + ap
         prec = ['%.2f' % p for p in precision]
         rec = ['%.2f' % r for r in recall]
@@ -364,3 +364,10 @@ mAP = acc_AP / validClasses
 mAP_str = "{0:.2f}%".format(mAP * 100)
 print('mAP: %s' % mAP_str)
 f.write('\n\n\nmAP: %s' % mAP_str)
+
+#get mAP for each segment and store in parent directory of detections
+segmAPFolder = detFolder.rstrip(os.sep).split(os.sep)
+segName = segmAPFolder[-1] # select name of segment
+segmAPFolder = os.sep.join(segmAPFolder[0:-1]) # get parent folder of segment
+with open(segmAPFolder + '/segmentsMAP.csv','a+') as segData:
+    segData.write('{},{}\n'.format(segName,mAP))
