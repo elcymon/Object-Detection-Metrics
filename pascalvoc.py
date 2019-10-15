@@ -22,7 +22,7 @@ from BoundingBox import BoundingBox
 from BoundingBoxes import BoundingBoxes
 from Evaluator import *
 from utils import BBFormat
-
+import pandas as pd
 
 # Validate formats
 def ValidateFormats(argFormat, argName, errors):
@@ -321,7 +321,7 @@ acc_AP = 0
 validClasses = 1 # set to 1 because I work on only litter. change to 0 if more than one classes
 
 # Plot Precision x Recall curve
-detections = evaluator.PlotPrecisionRecallCurve(
+detections,logInfoDF = evaluator.PlotPrecisionRecallCurve(
     allBoundingBoxes,  # Object containing all bounding boxes (ground truths and detections)
     IOUThreshold=iouThreshold,  # IOU threshold
     method=MethodAveragePrecision.EveryPointInterpolation,
@@ -329,6 +329,11 @@ detections = evaluator.PlotPrecisionRecallCurve(
     showInterpolatedPrecision=False,  # Don't plot the interpolated precision curve
     savePath=savePath,
     showGraphic=showPlot)
+
+#sort loginfo based on image name
+logInfoDF.sort_values('imageName',inplace=True)
+#write loginfo to csv file
+logInfoDF.to_csv(os.path.join(savePath,'logInfoDF.csv'))
 
 f = open(os.path.join(savePath, 'results.txt'), 'w')
 f.write('Object Detection Metrics\n')
